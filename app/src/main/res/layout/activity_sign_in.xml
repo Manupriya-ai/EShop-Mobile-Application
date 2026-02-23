@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F7FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/shopping_cart_24px"
+            android:layout_gravity="center"/>
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="181dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/welcome_back"
+            android:textColor="@color/md_theme_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Username -->
+        <EditText
+            android:id="@+id/signin_input_email"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Email"
+            android:padding="14dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Password -->
+        <EditText
+            android:id="@+id/signin_input_password"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="14dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:id="@+id/signin_forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forgot_password"
+            android:textSize="12sp"
+            android:layout_gravity="end"
+            android:textColor="@color/md_theme_secondary" />
+
+        <!-- Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/signin_btn_signin"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="@string/text_signin"
+            android:inputType="textEmailAddress"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#3F51B5"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:text="@string/text_create_a_new_account"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/signin_btn_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/text_sign_up" />
+
+    </LinearLayout>
+
+</ScrollView>
