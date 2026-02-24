@@ -6,7 +6,7 @@
     tools:context=".fragment.ListingFragment">
 
    <androidx.recyclerview.widget.RecyclerView
-       android:id="@+id/recycle_view_listing"
+       android:id="@+id/recyclerViewListing"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:padding="8dp"/>
