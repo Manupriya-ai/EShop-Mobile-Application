@@ -56,7 +56,7 @@ public class ListingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        binding.recycleViewListing.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.recyclerViewListing.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -92,7 +92,7 @@ public class ListingFragment extends Fragment {
                         adapter = new ListingAdapter(products, product -> {
 
                             Bundle bundle = new Bundle();
-                            bundle.putString("productId", product.getProductId());
+                            bundle.putString("productId",product.getProductId());
 
                             ProductDetailsFragment productDetailsFragment = new ProductDetailsFragment();
                             productDetailsFragment.setArguments(bundle);
@@ -103,13 +103,13 @@ public class ListingFragment extends Fragment {
                                     .commit();
                         });
 
-                        binding.recycleViewListing.setAdapter(adapter);
+                        binding.recyclerViewListing.setAdapter(adapter);
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("Firestore", "Error:" + e.getMessage());
+                        Log.e("Firestore", "Error:"+e.getMessage());
                     }
                 });
 
@@ -122,11 +122,3 @@ public class ListingFragment extends Fragment {
 
     }
 }
-
-
-//Bundle bundle = new Bundle();
-//bundle.putString("productId", product.getProductId());
-//
-//ProductDetailsFragment productDetailsFragment = new ProductDetailsFragment();
-//productDetailsFragment.setArguments(bundle);
-
