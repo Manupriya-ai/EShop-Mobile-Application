@@ -22,7 +22,17 @@ It provides a smooth shopping experience for customers while allowing admins to 
 - **Home Slide Bar** – Featured products and promotions  
 - **Bottom Navigation Bar** – Easy navigation between sections  
 - **Product Listing** – View all available products  
-- **Single Product View** – Detailed view of each product  
+- **Single Product View** – Detailed view of each product
+- ** Single Product View** – Color Size load complete
+- ** Single Product View** – Bottom Recycler View
+- ** Single Product View** – Qty select and change
+- ** Single Product View** - color size values get
+
+---
+
+##Firebase 
+##2026.02.24
+- **Create Attributes
 
 ---
 
