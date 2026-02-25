@@ -1,8 +1,7 @@
 # Eshop M-Commerce App
 
 ## Description
-Eshop M-Commerce App is an Android-based mobile commerce application for selling laptops and electronics.  
-It provides a smooth shopping experience for customers while allowing admins to efficiently manage products.
+Android-based M-Commerce application developed using Java and XML with Firebase Authentication and Firestore integration. The app includes secure user login, category-based product listing, featured home slider, bottom navigation, and detailed single product view with dynamic color/size selection, quantity management, and related product display.
 
 ---
 
@@ -26,7 +25,8 @@ It provides a smooth shopping experience for customers while allowing admins to 
 - ** Single Product View** – Color Size load complete
 - ** Single Product View** – Bottom Recycler View
 - ** Single Product View** – Qty select and change
-- ** Single Product View** - color size values get
+- ** Single Product View** - color size values get & cart process
+- ** Cart ** - Add to cart products view
 
 ---
 
