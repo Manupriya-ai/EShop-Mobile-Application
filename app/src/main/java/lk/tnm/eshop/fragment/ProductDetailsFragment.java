@@ -153,7 +153,7 @@ public class ProductDetailsFragment extends Fragment {
            String uid = firebaseAuth.getCurrentUser().getUid();
 
             db.collection("users").document(uid).collection("cart")
-                    .document(productId)
+                    .document()
                     .set(cartItem)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

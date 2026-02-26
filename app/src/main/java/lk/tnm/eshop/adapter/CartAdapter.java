@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
+import java.util.Locale;
 
 import lk.tnm.eshop.R;
 import lk.tnm.eshop.model.CartItem;
@@ -27,13 +29,21 @@ import lk.tnm.eshop.model.Product;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     private List<CartItem> cartItems;
-    private OnListingItemClickListener listener;
+    private OnQuantityChangeListener changeListener;
+    private OnRemoveListener removeListener;
 
 
 
-    public CartAdapter(List<CartItem> cartItems, OnListingItemClickListener listener) {
+    public CartAdapter(List<CartItem> cartItems) {
         this.cartItems = cartItems;
-        this.listener = listener;
+
+    }
+
+    public  void  setOnQuantityChangeListener(OnQuantityChangeListener listner){
+        this.changeListener = listner;
+    }
+    public  void  setOnRemoveListener(OnRemoveListener listner){
+        this.removeListener = listner;
     }
 
     @NonNull
@@ -54,10 +64,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             @Override
             public void onSuccess(QuerySnapshot qds) {
                 if (!qds.isEmpty()) {
+
+                    int currentPotion = holder.getAbsoluteAdapterPosition();
+                    if(currentPotion == RecyclerView.NO_POSITION){
+                        return;
+                    }
+
                     Product product = qds.getDocuments().get(0).toObject(Product.class);
 
                     holder.productTitle.setText(product.getTitle());
-                    holder.productPrice.setText("LKR " + product.getPrice());
+                    holder.productPrice.setText(String.format(Locale.US,"LKR %,.2f", product.getPrice()) );
                     holder.productQuentity.setText(String.valueOf(cartItem.getQuantity()));
 
 
@@ -65,28 +81,52 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                             .load(product.getImages().get(0))
                             .centerCrop()
                             .into(holder.productImage);
+
+
+
+                    holder.btnPlus.setOnClickListener(view ->{
+                        if (cartItem.getQuantity() < product.getStockCount()){
+                            cartItem.setQuantity(cartItem.getQuantity() + 1);
+                            notifyItemChanged(currentPotion);
+                            if (changeListener != null) {
+                                changeListener.onChange(cartItem);
+                            }
+                        }
+
+
+
+                    });
+
+                    holder.btnMinus.setOnClickListener(view ->{
+                        if (cartItem.getQuantity() > 1) {
+                            cartItem.setQuantity(cartItem.getQuantity() - 1);
+                            notifyItemChanged(currentPotion);
+                            if (changeListener != null) {
+                                changeListener.onChange(cartItem);
+                            }
+                        }
+
+
+
+                    });
+
+                    holder.btnRemove.setOnClickListener(view ->{
+
+                        if (removeListener != null) {
+                            removeListener.onRemoved(currentPotion);
+                        }
+
+
+                    });
+
+
+
                 }
             }
         });
 
 
 
-//        holder.productTitle.setText(cartItem.get());
-//        holder.productPrice.setText("LKR"+product.getPrice());
-//        Glide.with(holder.itemView.getContext())
-//                .load(product.getImages().get(0))
-//                .centerCrop()
-//                .into(holder.productImage);
-//
-//        holder.itemView.setOnClickListener(v->{
-//
-//            Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.click_animation);
-//            v.startAnimation(animation);
-//
-//            if (listener != null){
-//                listener.onListingItemClick(product);
-//            }
-//        });
     }
 
 
@@ -101,16 +141,29 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         TextView productPrice;
         TextView productQuentity;
 
+        AppCompatButton btnPlus;
+        AppCompatButton btnMinus;
+        ImageView btnRemove;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.item_cart_image);
             productTitle = itemView.findViewById(R.id.item_cart_title);
             productPrice = itemView.findViewById(R.id.item_cart_price);
             productQuentity = itemView.findViewById(R.id.item_cart_quentity);
+            btnPlus = itemView.findViewById(R.id.item_cart_btn_plus);
+            btnMinus = itemView.findViewById(R.id.item_cart_btn_minus);
+            btnRemove = itemView.findViewById(R.id.item_cart_remove);
         }
     }
 
-    public interface OnListingItemClickListener{
-        void onListingItemClick(Product product);
+    public interface OnQuantityChangeListener{
+        void onChange(CartItem cartItem);
     }
+
+    public interface OnRemoveListener{
+        void onRemoved(int position );
+    }
+
+
 }
