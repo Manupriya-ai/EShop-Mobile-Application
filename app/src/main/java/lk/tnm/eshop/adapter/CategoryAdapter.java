@@ -1,5 +1,6 @@
 package lk.tnm.eshop.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -23,9 +26,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private List<Category> categories;
     private OnCategoryClickListener listner;
 
+    private FirebaseStorage storage;
+
     public CategoryAdapter(List<Category> categories,OnCategoryClickListener listner) {
         this.categories = categories;
         this.listner = listner;
+        storage = FirebaseStorage.getInstance();
     }
 
     @NonNull
@@ -42,9 +48,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         holder.categoryName.setText(category.getName());
 
-        Glide.with(holder.itemView.getContext())
-                .load(category.getImageUrl())
-                .into(holder.categoryImage);
+
+
+        storage.getReference(category.getImageUrl())
+                .getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+
+
+
+                    Glide.with(holder.itemView.getContext())
+                            .load(uri)
+                            .centerCrop()
+                            .into(holder.categoryImage);
+                });
+
+
 
 
 

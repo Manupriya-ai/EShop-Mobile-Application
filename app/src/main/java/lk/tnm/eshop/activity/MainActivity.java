@@ -1,6 +1,8 @@
 package lk.tnm.eshop.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,6 +11,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +30,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirestoreKt;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.UUID;
 
 import lk.tnm.eshop.R;
 import lk.tnm.eshop.databinding.ActivityMainBinding;
@@ -69,31 +77,7 @@ public class MainActivity extends AppCompatActivity
         View headerView = binding.sideNavigationView.getHeaderView(0);
         sideNavHeaderBinding = SideNavHeaderBinding.bind(headerView);
 
-//        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if (currentUser != null) {
-//
-//            FirebaseFirestore.getInstance()
-//                    .collection("users")
-//                    .document(currentUser.getUid())
-//                    .get()
-//                    .addOnSuccessListener(documentSnapshot -> {
-//
-//                        if (documentSnapshot.exists()) {
-//
-//                            String name = documentSnapshot.getString("name");
-//                            String email = documentSnapshot.getString("email");
-//                            String profileImage = documentSnapshot.getString("profileImage");
-//
-//                            sideNavHeaderBinding.headerUserName.setText(name);
-//                            sideNavHeaderBinding.headerUserEmail.setText(email);
-//
-//                            // Profile image load karanna Glide use karamu
-//                            Glide.with(this)
-//                                    .load(profileImage)
-//                                    .into(sideNavHeaderBinding.headerProfileProfilePic);
-//                        }
-//                    });
-//        }
+
 
 
         drawerLayout = binding.drawlerLayout;
@@ -159,10 +143,14 @@ public class MainActivity extends AppCompatActivity
                             sideNavHeaderBinding.headerUserName.setText(user.getName());
                             sideNavHeaderBinding.headerUserEmail.setText(user.getEmail());
 
-                            Glide.with(this)
-                                    .load(user.getProfilePicUrl())
-                                    .circleCrop()
-                                    .into(sideNavHeaderBinding.headerProfileProfilePic);
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            storage.getReference("profile-images/" + user.getProfilePicUrl()).getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                        Glide.with(MainActivity.this)
+                                                .load(uri)
+                                                .circleCrop()
+                                                .into(sideNavHeaderBinding.headerProfileProfilePic);
+                                    });
 
                         } else {
                             Log.e("Firestore", "Document Doesn't exist");
@@ -182,10 +170,52 @@ public class MainActivity extends AppCompatActivity
             navigationView.getMenu().findItem(R.id.side_nav_message).setVisible(true);
             navigationView.getMenu().findItem(R.id.side_nav_logout).setVisible(true);
 
+            sideNavHeaderBinding.headerProfileProfilePic.setOnClickListener(v ->{
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                activityResultLauncher.launch(intent);
+
+
+            });
+
         }
 
 
     }
+
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK){
+                       Uri uri = result.getData().getData();
+                       Log.i("ImageURI", uri.getPath());
+
+                        Glide.with(MainActivity.this)
+                                .load(uri)
+                                .circleCrop()
+                                .into(sideNavHeaderBinding.headerProfileProfilePic);
+
+                       String imageId = UUID.randomUUID().toString();
+
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                        StorageReference imageReferance = storage.getReference("profile-images").child(imageId);
+                        imageReferance.putFile(uri)
+                                .addOnSuccessListener(taskSnapshot -> {
+
+                                    firebaseFirestore.collection("users")
+                                            .document(firebaseAuth.getUid())
+                                            .update("profilePicUrl", imageId)
+                                            .addOnSuccessListener(aVoid ->{
+                                                Toast.makeText(MainActivity.this, "Profile Image change", Toast.LENGTH_SHORT).show();
+                                            });
+
+                                });
+
+                    }
+            }
+    );
 
 
     // Side Navigation Click
